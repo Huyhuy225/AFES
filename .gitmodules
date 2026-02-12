@@ -1,0 +1,6 @@
+[submodule "frontend"]
+	path = frontend
+	url = https://github.com/Huyhuy225/afes_FE
+[submodule "backend"]
+	path = backend
+	url = https://github.com/Huyhuy225/afes_BE
