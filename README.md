@@ -14,7 +14,8 @@ AFES/
 ├── backend/            # Java Spring Boot (REST API & Business Logic) 
 ├── docker-compose.yml 
 └── README.md
-'''
+```
+
 ## 🚀 Local Development & Testing
 
 The project is fully Dockerized. You can launch the entire stack (Frontend + Backend) with a single command — no need to install Java or Node.js locally.
@@ -34,5 +35,78 @@ The project is fully Dockerized. You can launch the entire stack (Frontend + Bac
 ```bash
 git clone --recursive https://github.com/Huyhuy225/AFES.git
 cd AFES
-'''
+```
+### 2️⃣ Spin up the system
+```bash
+docker-compose up --build
+```
+### 3️⃣ Access the services
+- Frontend Dashboard: http://localhost
+- Backend API: http://localhost:8080
+- Swagger UI (API Docs): http://localhost:8080/swagger-ui/index.html
+
+## 🌐 Live Deployment
+
+The system is deployed using a hybrid cloud strategy for maximum regional availability and efficiency.
+
+| Component | Status | Hosting Provider | Live URL |
+| --- | --- | --- | --- |
+| **Frontend** | Live | GitHub Pages | [https://huyhuy225.github.io/afes_FE/](https://huyhuy225.github.io/afes_FE/) |
+| **Backend** | Live | Azure Container Apps | *API Endpoint* |
+
+## 🛠️ Tech Stack
+
+### 🎨 Frontend
+* React.js
+* Vite
+* Tailwind CSS
+* Axios
+* Chart.js
+
+### ⚙️ Backend
+* Java 17+
+* Spring Boot 3.x
+* Spring Data JPA
+* Hibernate
+
+### ☁️ Infrastructure
+* Azure Container Apps (Southeast Asia region)
+
+### 🔁 DevOps
+* Docker
+* Docker Compose
+* GitHub Actions (CI/CD)
+
+---
+
+## 🔧 Configuration & Security
+
+### 1️⃣ CORS Management
+The Backend strictly allows requests only from trusted origins:
+* `http://localhost` (Development)
+* `[https://huyhuy225.github.io/afes_FE/](https://huyhuy225.github.io/afes_FE/)` (Production)
+
+### 2️⃣ Environment Variables
+
+**Frontend**
+* `VITE_API_URL` → Points to the correct Backend endpoint depending on the environment.
+
+**Backend**
+* Database credentials
+* API ports
+*(All managed via Docker environment variables).*
+
+### 3️⃣ CI/CD Pipeline
+Every push to the main branch automatically:
+* Builds production assets
+* Deploys the Frontend to GitHub Pages
+
+> *Fully automated via GitHub Actions.*
+
+---
+
+## 👤 Author
+
+**Huy Vo**
+* **GitHub:** [https://github.com/Huyhuy225](https://github.com/Huyhuy225)
 
