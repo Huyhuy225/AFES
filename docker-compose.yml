@@ -14,33 +14,51 @@ services:
       timeout: 5s
       retries: 10
 
+  # Trạm 2: MQTT Broker (Trạm trung chuyển dữ liệu)
+  mosquitto:
+    build:
+      context: ./mqtt/mqtt      # Trỏ vào thư mục chứa Dockerfile (Lớp 2)
+      dockerfile: Dockerfile
+    container_name: mosquitto-broker
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    volumes:
+      # Data và log nằm ngang hàng Dockerfile nên chỉ cần 2 chữ mqtt
+      - ./mqtt/mqtt/data:/mosquitto/data
+      - ./mqtt/mqtt/log:/mosquitto/log
+  # Trạm 3: Backend Spring Boot
   backend:
     build: ./backend
     container_name: afes-backend
     ports:
       - "8080:8080"
     environment:
-      # QUAN TRỌNG: Trỏ vào 'db' (tên service) chứ không phải Azure
-      # Sửa lỗi typo 'PRING' thành 'SPRING' luôn nhé Bo
       - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/afes_db?useSSL=false&allowPublicKeyRetrieval=true
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=password
+      # QUAN TRỌNG: Cấp địa chỉ để Backend biết đường tìm MQTT Broker trong mạng Docker
+      - MQTT_BROKER_URL=tcp://mosquitto:1883
     depends_on:
-     db:
-       condition: service_healthy
-  # IF USE AZURE
-#  backend:
-#    build: ./backend
-#    container_name: afes-backend
-#    ports:
-#      - "8080:8080"
-#    environment:
-##      # Thay đổi các thông tin bên dưới cho khớp với Azure của bạn
-#    - SPRING_DATASOURCE_URL=jdbc:mysql://afes-db.mysql.database.azure.com:3306/afes_db?useSSL=true
-#    - SPRING_DATASOURCE_USERNAME=admin123
-#    - SPRING_DATASOURCE_PASSWORD=Hello123
+      db:
+        condition: service_healthy
+      # Backend cũng phải chờ MQTT chạy lên thì mới khởi động được
+      mosquitto:
+        condition: service_started
 
-  # Trạm 3: Frontend
+  # IF USE AZURE (Đã căn chỉnh lại dấu cách cho đẹp)
+  # backend:
+  #   build: ./backend
+  #   container_name: afes-backend
+  #   ports:
+  #     - "8080:8080"
+  #   environment:
+  #     - SPRING_DATASOURCE_URL=jdbc:mysql://afes-db.mysql.database.azure.com:3306/afes_db?useSSL=true
+  #     - SPRING_DATASOURCE_USERNAME=admin123
+  #     - SPRING_DATASOURCE_PASSWORD=Hello123
+  #     - MQTT_BROKER_URL=tcp://mosquitto:1883
+
+  # Trạm 4: Frontend
   frontend:
     build: ./frontend
     container_name: afes-frontend
