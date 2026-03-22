@@ -9,3 +9,6 @@
 [submodule "mqtt"]
 	path = mqtt
 	url = https://github.com/nghitrung/Flame_Detection_System.git
+[submodule "hardware/https:/github.com/Huyhuy225/AFES.git"]
+	path = hardware/https:/github.com/Huyhuy225/AFES.git
+	url = https://github.com/nghitrung/hardware-code.git

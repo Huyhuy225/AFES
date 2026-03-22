@@ -17,16 +17,16 @@ services:
   # Trạm 2: MQTT Broker (Trạm trung chuyển dữ liệu)
   mosquitto:
     build:
-      context: ./mqtt/mqtt      # Trỏ vào thư mục chứa Dockerfile (Lớp 2)
+      context: ./mqtt      # Trỏ vào thư mục chứa Dockerfile (Lớp 2)
       dockerfile: Dockerfile
     container_name: mosquitto-broker
     ports:
       - "1883:1883"
       - "9001:9001"
     volumes:
-      # Data và log nằm ngang hàng Dockerfile nên chỉ cần 2 chữ mqtt
-      - ./mqtt/mqtt/data:/mosquitto/data
-      - ./mqtt/mqtt/log:/mosquitto/log
+      - ./mqtt/mosquitto/config:/mosquitto/config
+      - ./mqtt/mosquitto/data:/mosquitto/data
+      - ./mqtt/mosquitto/log:/mosquitto/log
   # Trạm 3: Backend Spring Boot
   backend:
     build: ./backend
