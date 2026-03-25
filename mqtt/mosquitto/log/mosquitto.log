@@ -1700,3 +1700,267 @@ To fix this, use `chmod 0700 /mosquitto/config/pwfile`.
 1774431618: Client afes-backend-client [172.18.0.4:33200] disconnected.
 1774431619: mosquitto version 2.1.2 terminating
 1774431619: Saving in-memory database to /mosquitto/data//moquistto.db.
+1774457635: mosquitto version 2.1.2 starting
+1774457635: Config loaded from /mosquitto/config/mosquitto.conf.
+1774457635: Bridge support available.
+1774457635: Persistence support available.
+1774457635: TLS support available.
+1774457635: TLS-PSK support available.
+1774457635: Websockets support available.
+1774457635: Warning: File /mosquitto/config/pwfile has world readable permissions. Future versions will refuse to load this file.
+To fix this, use `chmod 0700 /mosquitto/config/pwfile`.
+
+1774457635: Warning: File /mosquitto/config/pwfile owner is not mosquitto. Future versions will refuse to load this file.To fix this, use `chown mosquitto /mosquitto/config/pwfile`.
+
+1774457635: Warning: File /mosquitto/config/pwfile group is not mosquitto. Future versions will refuse to load this file.
+
+1774457635: Plugin builtin-security has registered to receive 'basic-auth' events.
+1774457635: Opening ipv4 listen socket on port 1883.
+1774457635: Opening ipv6 listen socket on port 1883.
+1774457635: Opening ipv4 listen socket on port 9001.
+1774457635: Opening ipv6 listen socket on port 9001.
+1774457635: mosquitto version 2.1.2 running
+1774457688: New connection from 172.18.0.4:43218 on port 1883.
+1774457689: New client connected from 172.18.0.4:43218 as afes-backend-client (p4, c1, k60, u'Flame_Detection_System').
+1774457989: Client afes-backend-client [172.18.0.4:43218] disconnected: connection closed by client.
+1774457992: mosquitto version 2.1.2 terminating
+1774457992: Saving in-memory database to /mosquitto/data//moquistto.db.
+1774458609: mosquitto version 2.1.2 starting
+1774458609: Config loaded from /mosquitto/config/mosquitto.conf.
+1774458609: Bridge support available.
+1774458609: Persistence support available.
+1774458609: TLS support available.
+1774458609: TLS-PSK support available.
+1774458609: Websockets support available.
+1774458609: Warning: File /mosquitto/config/pwfile has world readable permissions. Future versions will refuse to load this file.
+To fix this, use `chmod 0700 /mosquitto/config/pwfile`.
+
+1774458609: Warning: File /mosquitto/config/pwfile owner is not mosquitto. Future versions will refuse to load this file.To fix this, use `chown mosquitto /mosquitto/config/pwfile`.
+
+1774458609: Warning: File /mosquitto/config/pwfile group is not mosquitto. Future versions will refuse to load this file.
+
+1774458609: Plugin builtin-security has registered to receive 'basic-auth' events.
+1774458609: Opening ipv4 listen socket on port 1883.
+1774458609: Opening ipv6 listen socket on port 1883.
+1774458609: Opening ipv4 listen socket on port 9001.
+1774458609: Opening ipv6 listen socket on port 9001.
+1774458609: mosquitto version 2.1.2 running
+1774458695: New connection from 172.18.0.4:53944 on port 1883.
+1774458696: New client connected from 172.18.0.4:53944 as afes-backend-client (p4, c1, k60, u'Flame_Detection_System').
+1774458882: Client afes-backend-client [172.18.0.4:53944] disconnected.
+1774458883: mosquitto version 2.1.2 terminating
+1774458883: Saving in-memory database to /mosquitto/data//moquistto.db.
+1774458911: mosquitto version 2.1.2 starting
+1774458911: Config loaded from /mosquitto/config/mosquitto.conf.
+1774458911: Bridge support available.
+1774458911: Persistence support available.
+1774458911: TLS support available.
+1774458911: TLS-PSK support available.
+1774458911: Websockets support available.
+1774458911: Warning: File /mosquitto/config/pwfile has world readable permissions. Future versions will refuse to load this file.
+To fix this, use `chmod 0700 /mosquitto/config/pwfile`.
+
+1774458911: Warning: File /mosquitto/config/pwfile owner is not mosquitto. Future versions will refuse to load this file.To fix this, use `chown mosquitto /mosquitto/config/pwfile`.
+
+1774458911: Warning: File /mosquitto/config/pwfile group is not mosquitto. Future versions will refuse to load this file.
+
+1774458911: Plugin builtin-security has registered to receive 'basic-auth' events.
+1774458911: Opening ipv4 listen socket on port 1883.
+1774458911: Opening ipv6 listen socket on port 1883.
+1774458911: Opening ipv4 listen socket on port 9001.
+1774458911: Opening ipv6 listen socket on port 9001.
+1774458911: mosquitto version 2.1.2 running
+1774458930: New connection from 172.18.0.4:39554 on port 1883.
+1774458930: New client connected from 172.18.0.4:39554 as afes-backend-client (p4, c1, k60, u'Flame_Detection_System').
+1774459025: Client afes-backend-client [172.18.0.4:39554] disconnected.
+1774459027: mosquitto version 2.1.2 terminating
+1774459027: Saving in-memory database to /mosquitto/data//moquistto.db.
+1774459346: mosquitto version 2.1.2 starting
+1774459346: Config loaded from /mosquitto/config/mosquitto.conf.
+1774459346: Bridge support available.
+1774459346: Persistence support available.
+1774459346: TLS support available.
+1774459346: TLS-PSK support available.
+1774459346: Websockets support available.
+1774459346: Warning: File /mosquitto/config/pwfile has world readable permissions. Future versions will refuse to load this file.
+To fix this, use `chmod 0700 /mosquitto/config/pwfile`.
+
+1774459346: Warning: File /mosquitto/config/pwfile owner is not mosquitto. Future versions will refuse to load this file.To fix this, use `chown mosquitto /mosquitto/config/pwfile`.
+
+1774459346: Warning: File /mosquitto/config/pwfile group is not mosquitto. Future versions will refuse to load this file.
+
+1774459346: Plugin builtin-security has registered to receive 'basic-auth' events.
+1774459346: Opening ipv4 listen socket on port 1883.
+1774459346: Opening ipv6 listen socket on port 1883.
+1774459346: Opening ipv4 listen socket on port 9001.
+1774459346: Opening ipv6 listen socket on port 9001.
+1774459346: mosquitto version 2.1.2 running
+1774459348: New connection from 172.18.0.1:56484 on port 1883.
+1774459348: New client connected from 172.18.0.1:56484 as Sensor-86e6 (p4, c1, k15, u'Flame_Detection_System').
+1774459385: New connection from 172.18.0.4:43170 on port 1883.
+1774459386: New client connected from 172.18.0.4:43170 as afes-backend-client (p4, c1, k60, u'Flame_Detection_System').
+1774459499: New connection from 172.18.0.1:42142 on port 1883.
+1774459499: New client connected from 172.18.0.1:42142 as Sensor-62b5 (p4, c1, k15, u'Flame_Detection_System').
+1774459509: Client Sensor-86e6 [172.18.0.1:56484] disconnected: connection closed by client.
+1774459530: Client afes-backend-client [172.18.0.4:43170] disconnected.
+1774459531: mosquitto version 2.1.2 terminating
+1774459531: Saving in-memory database to /mosquitto/data//moquistto.db.
+1774460373: mosquitto version 2.1.2 starting
+1774460373: Config loaded from /mosquitto/config/mosquitto.conf.
+1774460373: Bridge support available.
+1774460373: Persistence support available.
+1774460373: TLS support available.
+1774460373: TLS-PSK support available.
+1774460373: Websockets support available.
+1774460373: Warning: File /mosquitto/config/pwfile has world readable permissions. Future versions will refuse to load this file.
+To fix this, use `chmod 0700 /mosquitto/config/pwfile`.
+
+1774460373: Warning: File /mosquitto/config/pwfile owner is not mosquitto. Future versions will refuse to load this file.To fix this, use `chown mosquitto /mosquitto/config/pwfile`.
+
+1774460373: Warning: File /mosquitto/config/pwfile group is not mosquitto. Future versions will refuse to load this file.
+
+1774460373: Plugin builtin-security has registered to receive 'basic-auth' events.
+1774460373: Opening ipv4 listen socket on port 1883.
+1774460373: Opening ipv6 listen socket on port 1883.
+1774460373: Opening ipv4 listen socket on port 9001.
+1774460373: Opening ipv6 listen socket on port 9001.
+1774460373: mosquitto version 2.1.2 running
+1774460378: New connection from 172.18.0.1:55442 on port 1883.
+1774460378: New client connected from 172.18.0.1:55442 as Sensor-847a (p4, c1, k15, u'Flame_Detection_System').
+1774460435: New connection from 172.18.0.4:52576 on port 1883.
+1774460436: New client connected from 172.18.0.4:52576 as afes-backend-client (p4, c1, k60, u'Flame_Detection_System').
+1774460480: New connection from 172.18.0.4:41568 on port 1883.
+1774460480: New client connected from 172.18.0.4:41568 as afes-control-1774460480058 (p4, c1, k60, u'Flame_Detection_System').
+1774460480: Client afes-control-1774460480058 [172.18.0.4:41568] disconnected.
+1774460484: New connection from 172.18.0.4:41572 on port 1883.
+1774460484: New client connected from 172.18.0.4:41572 as afes-control-1774460484201 (p4, c1, k60, u'Flame_Detection_System').
+1774460484: Client afes-control-1774460484201 [172.18.0.4:41572] disconnected.
+1774460504: New connection from 172.18.0.4:50906 on port 1883.
+1774460505: New client connected from 172.18.0.4:50906 as afes-control-1774460504903 (p4, c1, k60, u'Flame_Detection_System').
+1774460505: Client afes-control-1774460504903 [172.18.0.4:50906] disconnected.
+1774460508: New connection from 172.18.0.4:50918 on port 1883.
+1774460509: New client connected from 172.18.0.4:50918 as afes-control-1774460508757 (p4, c1, k60, u'Flame_Detection_System').
+1774460509: Client afes-control-1774460508757 [172.18.0.4:50918] disconnected.
+1774460513: New connection from 172.18.0.4:54878 on port 1883.
+1774460514: New client connected from 172.18.0.4:54878 as afes-control-1774460513967 (p4, c1, k60, u'Flame_Detection_System').
+1774460514: Client afes-control-1774460513967 [172.18.0.4:54878] disconnected.
+1774460517: New connection from 172.18.0.4:54884 on port 1883.
+1774460517: New client connected from 172.18.0.4:54884 as afes-control-1774460517383 (p4, c1, k60, u'Flame_Detection_System').
+1774460517: Client afes-control-1774460517383 [172.18.0.4:54884] disconnected.
+1774461023: New connection from 172.18.0.1:45138 on port 1883.
+1774461023: New client connected from 172.18.0.1:45138 as Sensor-986c (p4, c1, k15, u'Flame_Detection_System').
+1774461034: Client Sensor-847a [172.18.0.1:55442] disconnected: connection closed by client.
+1774461037: Client afes-backend-client [172.18.0.4:52576] disconnected.
+1774461039: mosquitto version 2.1.2 terminating
+1774461039: Saving in-memory database to /mosquitto/data//moquistto.db.
+1774462195: mosquitto version 2.1.2 starting
+1774462195: Config loaded from /mosquitto/config/mosquitto.conf.
+1774462195: Bridge support available.
+1774462195: Persistence support available.
+1774462195: TLS support available.
+1774462195: TLS-PSK support available.
+1774462195: Websockets support available.
+1774462195: Warning: File /mosquitto/config/pwfile has world readable permissions. Future versions will refuse to load this file.
+To fix this, use `chmod 0700 /mosquitto/config/pwfile`.
+
+1774462195: Warning: File /mosquitto/config/pwfile owner is not mosquitto. Future versions will refuse to load this file.To fix this, use `chown mosquitto /mosquitto/config/pwfile`.
+
+1774462195: Warning: File /mosquitto/config/pwfile group is not mosquitto. Future versions will refuse to load this file.
+
+1774462195: Plugin builtin-security has registered to receive 'basic-auth' events.
+1774462195: Opening ipv4 listen socket on port 1883.
+1774462195: Opening ipv6 listen socket on port 1883.
+1774462195: Opening ipv4 listen socket on port 9001.
+1774462195: Opening ipv6 listen socket on port 9001.
+1774462195: mosquitto version 2.1.2 running
+1774462197: New connection from 172.18.0.1:43780 on port 1883.
+1774462197: New client connected from 172.18.0.1:43780 as Sensor-328b (p4, c1, k15, u'Flame_Detection_System').
+1774462235: New connection from 172.18.0.4:44764 on port 1883.
+1774462236: New client connected from 172.18.0.4:44764 as afes-backend-client (p4, c1, k60, u'Flame_Detection_System').
+1774463641: mosquitto version 2.1.2 starting
+1774463641: Config loaded from /mosquitto/config/mosquitto.conf.
+1774463641: Bridge support available.
+1774463641: Persistence support available.
+1774463641: TLS support available.
+1774463641: TLS-PSK support available.
+1774463641: Websockets support available.
+1774463641: Warning: File /mosquitto/config/pwfile has world readable permissions. Future versions will refuse to load this file.
+To fix this, use `chmod 0700 /mosquitto/config/pwfile`.
+
+1774463641: Warning: File /mosquitto/config/pwfile owner is not mosquitto. Future versions will refuse to load this file.To fix this, use `chown mosquitto /mosquitto/config/pwfile`.
+
+1774463641: Warning: File /mosquitto/config/pwfile group is not mosquitto. Future versions will refuse to load this file.
+
+1774463641: Plugin builtin-security has registered to receive 'basic-auth' events.
+1774463641: Opening ipv4 listen socket on port 1883.
+1774463641: Opening ipv6 listen socket on port 1883.
+1774463641: Opening ipv4 listen socket on port 9001.
+1774463641: Opening ipv6 listen socket on port 9001.
+1774463641: mosquitto version 2.1.2 running
+1774463642: New connection from 172.18.0.1:42768 on port 1883.
+1774463642: New client connected from 172.18.0.1:42768 as Sensor-6b0 (p4, c1, k15, u'Flame_Detection_System').
+1774463677: New connection from 172.18.0.4:54750 on port 1883.
+1774463677: New client connected from 172.18.0.4:54750 as afes-backend-client (p4, c1, k60, u'Flame_Detection_System').
+1774463808: New connection from 172.18.0.4:55666 on port 1883.
+1774463809: New client connected from 172.18.0.4:55666 as afes-control-1774463808458 (p4, c1, k60, u'Flame_Detection_System').
+1774463809: Client afes-control-1774463808458 [172.18.0.4:55666] disconnected.
+1774463814: New connection from 172.18.0.4:52614 on port 1883.
+1774463814: New client connected from 172.18.0.4:52614 as afes-control-1774463814049 (p4, c1, k60, u'Flame_Detection_System').
+1774463814: Client afes-control-1774463814049 [172.18.0.4:52614] disconnected.
+1774464827: mosquitto version 2.1.2 starting
+1774464827: Config loaded from /mosquitto/config/mosquitto.conf.
+1774464827: Bridge support available.
+1774464827: Persistence support available.
+1774464827: TLS support available.
+1774464827: TLS-PSK support available.
+1774464827: Websockets support available.
+1774464827: Warning: File /mosquitto/config/pwfile has world readable permissions. Future versions will refuse to load this file.
+To fix this, use `chmod 0700 /mosquitto/config/pwfile`.
+
+1774464827: Warning: File /mosquitto/config/pwfile owner is not mosquitto. Future versions will refuse to load this file.To fix this, use `chown mosquitto /mosquitto/config/pwfile`.
+
+1774464827: Warning: File /mosquitto/config/pwfile group is not mosquitto. Future versions will refuse to load this file.
+
+1774464827: Plugin builtin-security has registered to receive 'basic-auth' events.
+1774464827: Opening ipv4 listen socket on port 1883.
+1774464827: Opening ipv6 listen socket on port 1883.
+1774464827: Opening ipv4 listen socket on port 9001.
+1774464827: Opening ipv6 listen socket on port 9001.
+1774464827: mosquitto version 2.1.2 running
+1774464829: New connection from 172.18.0.1:60966 on port 1883.
+1774464829: New client connected from 172.18.0.1:60966 as Sensor-78a3 (p4, c1, k15, u'Flame_Detection_System').
+1774464877: New connection from 172.18.0.4:53152 on port 1883.
+1774464878: New client connected from 172.18.0.4:53152 as afes-backend-client (p4, c1, k60, u'Flame_Detection_System').
+1774465350: Client afes-backend-client [172.18.0.4:53152] disconnected: connection closed by client.
+1774465360: mosquitto version 2.1.2 terminating
+1774465360: Saving in-memory database to /mosquitto/data//moquistto.db.
+1774465748: mosquitto version 2.1.2 starting
+1774465748: Config loaded from /mosquitto/config/mosquitto.conf.
+1774465748: Bridge support available.
+1774465748: Persistence support available.
+1774465748: TLS support available.
+1774465748: TLS-PSK support available.
+1774465748: Websockets support available.
+1774465748: Warning: File /mosquitto/config/pwfile has world readable permissions. Future versions will refuse to load this file.
+To fix this, use `chmod 0700 /mosquitto/config/pwfile`.
+
+1774465748: Warning: File /mosquitto/config/pwfile owner is not mosquitto. Future versions will refuse to load this file.To fix this, use `chown mosquitto /mosquitto/config/pwfile`.
+
+1774465748: Warning: File /mosquitto/config/pwfile group is not mosquitto. Future versions will refuse to load this file.
+
+1774465748: Plugin builtin-security has registered to receive 'basic-auth' events.
+1774465748: Opening ipv4 listen socket on port 1883.
+1774465748: Opening ipv6 listen socket on port 1883.
+1774465748: Opening ipv4 listen socket on port 9001.
+1774465748: Opening ipv6 listen socket on port 9001.
+1774465748: mosquitto version 2.1.2 running
+1774465748: New connection from 172.18.0.1:54038 on port 1883.
+1774465748: New client connected from 172.18.0.1:54038 as Sensor-8b3c (p4, c1, k15, u'Flame_Detection_System').
+1774465804: New connection from 172.18.0.4:56160 on port 1883.
+1774465804: New client connected from 172.18.0.4:56160 as afes-backend-client (p4, c1, k60, u'Flame_Detection_System').
+1774465875: New connection from 172.18.0.4:40510 on port 1883.
+1774465875: New client connected from 172.18.0.4:40510 as afes-control-1774465875507 (p4, c1, k60, u'Flame_Detection_System').
+1774465875: Client afes-control-1774465875507 [172.18.0.4:40510] disconnected.
+1774465877: New connection from 172.18.0.4:40522 on port 1883.
+1774465878: New client connected from 172.18.0.4:40522 as afes-control-1774465877747 (p4, c1, k60, u'Flame_Detection_System').
+1774465878: Client afes-control-1774465877747 [172.18.0.4:40522] disconnected.

@@ -1,10 +1,10 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#define ssid "ASUS"
-#define password "201202c5"
+#define ssid "Thành's iPhone"
+#define password "khongbiet"
 // Use broker host/IP only (without ":port").
-#define mqtt_server "192.168.1.196"
+#define mqtt_server "172.20.10.2"
 #define mqtt_port 1883
 #define mqtt_user "Flame_Detection_System"
 #define mqtt_password "123"
