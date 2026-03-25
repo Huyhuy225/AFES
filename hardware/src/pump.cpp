@@ -15,14 +15,14 @@ void pump_control(void *pvParameters) {
       manual_emergency_until_ms = 0;
     }
 
-    const bool autoTrigger = fire_alert && gas_alert && (glob_temperature > 45.0f);
+    const bool autoTrigger = fire_alert && smoke_alert && (glob_temperature > 45.0f);
     const bool manualTrigger = manual_pump_on || manual_emergency_on;
     const bool trigger = autoTrigger || manualTrigger;
     pump_on = trigger;
     analogWrite(PUMP_PIN, trigger ? 250 : 0);
 
     Serial.printf("pump=%d fire=%d gas=%d temp=%.2f manual=%d\n",
-                  pump_on ? 1 : 0, fire_alert ? 1 : 0, gas_alert ? 1 : 0,
+                  pump_on ? 1 : 0, fire_alert ? 1 : 0, smoke_alert ? 1 : 0,
                   glob_temperature, manualTrigger ? 1 : 0);
     vTaskDelay(pdMS_TO_TICKS(1000));
   }

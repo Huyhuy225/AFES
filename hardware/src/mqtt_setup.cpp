@@ -8,7 +8,7 @@
 WiFiClient yoloClient;
 PubSubClient client(yoloClient);
 long lastPublishTime = 0;
-const long publishInterval = 3000;
+const long publishInterval = 2000;
 const uint32_t testDurationMs = 10000UL;
 const uint32_t emergencyDurationMs = 20000UL;
 
@@ -34,7 +34,7 @@ static void applyControlAction(const String& action) {
         manual_alarm_until_ms = 0;
         manual_emergency_until_ms = 0;
         fire_alert = false;
-        gas_alert = false;
+        smoke_alert = false;
         Serial.println("\n[CTRL] reset_system accepted");
     } else if (action == "full_test") {
         manual_pump_on = true;
@@ -50,6 +50,16 @@ static void applyControlAction(const String& action) {
         manual_pump_until_ms = nowMs + emergencyDurationMs;
         manual_alarm_until_ms = nowMs + emergencyDurationMs;
         Serial.println("\n[CTRL] emergency_alert accepted");
+    } else if (action == "emergency_off" || action == "auto_mode" || action == "all_outputs_off") {
+        manual_emergency_on = false;
+        manual_pump_on = false;
+        manual_alarm_on = false;
+        manual_emergency_until_ms = 0;
+        manual_pump_until_ms = 0;
+        manual_alarm_until_ms = 0;
+        Serial.println(action == "all_outputs_off"
+                           ? "\n[CTRL] all_outputs_off: LED/buzzer/pump off, AUTO"
+                           : "\n[CTRL] emergency_off accepted, back to AUTO");
     } else {
         Serial.print("\n[CTRL] unknown action: ");
         Serial.println(action);

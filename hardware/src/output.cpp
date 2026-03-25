@@ -5,6 +5,10 @@ static bool blinkOnPhase() {
     return ((millis() / 1000UL) % 2UL) == 0UL;
 }
 
+static bool isHighTemp() {
+    return glob_temperature > 45.0f;
+}
+
 void led_init(uint8_t pin_adc, uint8_t pin_led, int threshold){
     (void)pin_adc;
     (void)pin_led;
@@ -27,8 +31,8 @@ void led_task(void* pv){
             manual_emergency_until_ms = 0;
         }
 
-        const bool autoTrigger = fire_alert && gas_alert && (glob_temperature > 45.0f);
-        const bool trigger = autoTrigger || manual_alarm_on || manual_emergency_on;
+        const bool warningTrigger = fire_alert || smoke_alert || isHighTemp();
+        const bool trigger = warningTrigger || manual_alarm_on || manual_emergency_on;
         const bool led_state = trigger && blinkOnPhase();
         digitalWrite(LED_PIN, led_state ? HIGH : LOW);
         ledbuzzon = trigger;
@@ -59,7 +63,7 @@ void buzz_task(void* pv)
             manual_emergency_until_ms = 0;
         }
 
-        const bool autoTrigger = fire_alert && gas_alert && (glob_temperature > 45.0f);
+        const bool autoTrigger = fire_alert && smoke_alert && isHighTemp();
         const bool trigger = autoTrigger || manual_alarm_on || manual_emergency_on;
         const bool buzz_state = trigger && blinkOnPhase();
         digitalWrite(BUZZER_PIN, buzz_state ? HIGH : LOW);

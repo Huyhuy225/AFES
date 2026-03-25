@@ -53,6 +53,7 @@ void temp_monitor(void *pvParameters) {
   }
 
   char lineBuf[32];
+  char alertBuf[17];
   while(1) {
     if (!isI2cDeviceReady(0x38)) {
       glob_temperature = -1.0f;
@@ -74,14 +75,42 @@ void temp_monitor(void *pvParameters) {
     }
 
     glob_temperature = temperature;
+    const bool highTemp = temperature > 45.0f;
+    const bool smokeHigh = smoke_alert;
+    const bool fireDetected = fire_alert;
 
     Serial.printf("[DHT] Temp: %.1f C\n", temperature);
+    if (highTemp) {
+      Serial.println("[ALERT] HIGH TEMP");
+    }
+    if (smokeHigh) {
+      Serial.println("[ALERT] SMOKE HIGH (MQ-2)");
+    }
 
     if (lcdReady) {
       lcd.clear();
       lcd.setCursor(0, 0);
       snprintf(lineBuf, sizeof(lineBuf), "Temp: %4.1f C", temperature);
       lcd.print(lineBuf);
+
+      lcd.setCursor(0, 1);
+      if (manual_emergency_on) {
+        snprintf(alertBuf, sizeof(alertBuf), "EMERGENCY");
+      } else if (manual_alarm_on) {
+        snprintf(alertBuf, sizeof(alertBuf), "MANUAL ALERT");
+      } else if (highTemp && smokeHigh) {
+        const bool showTemp = ((millis() / 2000UL) % 2UL) == 0UL;
+        snprintf(alertBuf, sizeof(alertBuf), "%s", showTemp ? "HIGH TEMP" : "SMOKE HIGH");
+      } else if (highTemp) {
+        snprintf(alertBuf, sizeof(alertBuf), "HIGH TEMP");
+      } else if (smokeHigh) {
+        snprintf(alertBuf, sizeof(alertBuf), "SMOKE HIGH");
+      } else if (fireDetected) {
+        snprintf(alertBuf, sizeof(alertBuf), "FIRE ALERT");
+      } else {
+        snprintf(alertBuf, sizeof(alertBuf), "SYSTEM NORMAL");
+      }
+      lcd.print(alertBuf);
     }
 
     vTaskDelay(pdMS_TO_TICKS(5000));
