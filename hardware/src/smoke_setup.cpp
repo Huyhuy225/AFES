@@ -35,7 +35,7 @@ void vTaskSmoke(void *pvParameter) {
                 smoke[0][0] = smoke[0][1] = smoke[0][2] = 0.0f;
                 smoke[1][0] = smoke[1][1] = smoke[1][2] = 0.0f;
                 smoke_alert = false;
-                Serial.print("\nMQ2 warmup... ignoring first 30s data");
+                Serial.printf("\nMQ2 warmup... ignoring first %.1fs data", MQ2_WARMUP_MS / 1000.0f);
                 xSemaphoreGive(xSensorMutex);
                 vTaskDelay(pdMS_TO_TICKS(MQ2_TASK_INTERVAL_MS));
                 continue;
@@ -69,10 +69,14 @@ void vTaskSmoke(void *pvParameter) {
                 smoke[1][1] = averagePpm(mq2_2, "LPG");
                 smoke[1][2] = smoke2;
 
+                const float mq2_1_total = smoke[0][0] + smoke[0][1] + smoke[0][2];
+                const float mq2_2_total = smoke[1][0] + smoke[1][1] + smoke[1][2];
+                const float smoke_total = mq2_1_total + mq2_2_total;
+
                 Serial.printf("\nCO1: %.2f | LPG1: %.2f | Smoke1: %.2f ppm", smoke[0][0], smoke[0][1], smoke[0][2]);
                 Serial.printf("\nCO2 %.2f | LPG2: %.2f | Smoke2: %.2f ppm", smoke[1][0], smoke[1][1], smoke[1][2]);
 
-                smoke_alert = (smoke1 > MQ2_SMOKE_ALERT_THRESHOLD_PPM) || (smoke2 > MQ2_SMOKE_ALERT_THRESHOLD_PPM);
+                smoke_alert = smoke_total > MQ2_SMOKE_ALERT_THRESHOLD_PPM;
             }
             xSemaphoreGive(xSensorMutex);
         }

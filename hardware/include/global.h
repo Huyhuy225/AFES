@@ -17,6 +17,7 @@
 #define PUMP_PIN   6
 #define BUZZER_PIN 8
 #define LED_PIN    10
+#define LED_STATUS_PIN 48
 #define BUTTON_PIN 21
 //-------------DHT20+LCD
 #define SDA_PIN   11
@@ -29,7 +30,7 @@ extern float glob_temperature;
 extern volatile bool pump_on;
 extern volatile bool fire_alert;
 extern volatile bool ledbuzzon;
-/** True when either MQ-2 smoke channel exceeds MQ2_SMOKE_ALERT_THRESHOLD_PPM. */
+/** True when (CO+LPG+Smoke) of both MQ-2 channels exceeds threshold. */
 extern volatile bool smoke_alert;
 extern volatile bool manual_pump_on;
 extern volatile bool manual_alarm_on;
