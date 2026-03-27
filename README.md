@@ -107,6 +107,12 @@ Every push to the main branch automatically:
 
 ## 👤 Author
 
-**Huy Vo**
+**Vo Quang Huy**
 * **GitHub:** [https://github.com/Huyhuy225](https://github.com/Huyhuy225)
+**Ho Cong Thanh**
+* **GitHub:** [https://github.com/thanhhocong](https://github.com/thanhhocong)
+**Nguyen Hieu Trung**
+* **GitHub:** [https://github.com/nghitrung](https://github.com/nghitrung)
+**Tran Thanh Nhu Y**
+* **GitHub:** [https://github.com/gutjmosnin](https://github.com/gutjmosnin)
 
