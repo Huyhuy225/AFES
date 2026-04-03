@@ -6,11 +6,3 @@
 	path = backend
 	url = https://github.com/Huyhuy225/afes_BE
 	branch = main
-[submodule "mqtt"]
-	path = mqtt
-	url = https://github.com/nghitrung/mqtt.git
-	branch = main 
-[submodule "hardware"]
-	path = hardware
-	url = https://github.com/nghitrung/hardware-code.git
-	branch = main
