@@ -14,7 +14,7 @@
 #define FLAME2_DIGIPIN 18
 #define FLAME2_ANAPIN 4
 
-#define PUMP_PIN   6
+#define PUMP_PIN   38
 #define BUZZER_PIN 8
 #define LED_PIN    10
 #define LED_STATUS_PIN 48
