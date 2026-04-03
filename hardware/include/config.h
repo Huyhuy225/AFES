@@ -4,7 +4,7 @@
 #define ssid "Thành's iPhone"
 #define password "khongbiet"
 // Use broker host/IP only (without ":port").
-#define mqtt_server "172.20.10.2"
+#define mqtt_server "4.144.181.249"
 #define mqtt_port 1883
 #define mqtt_user "Flame_Detection_System"
 #define mqtt_password "123"
