@@ -1,0 +1,11 @@
+# Bỏ qua cấu hình IDE cá nhân
+.idea/
+.vscode/
+
+# Bỏ qua file chứa biến môi trường/mật khẩu
+.env
+*.env
+
+# Bỏ qua file rác của hệ điều hành
+.DS_Store
+Thumbs.db
