@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: afes-config
+  namespace: afes
+data:
+  SPRING_DATASOURCE_URL: "jdbc:mysql://mysql-service:3306/afes_db?useSSL=false&allowPublicKeyRetrieval=true"
+  SPRING_DATASOURCE_USERNAME: "root"
+  MQTT_BROKER_URL: "tcp://mosquitto-service:1883"
+  VITE_API_URL: "http://localhost:8080/api"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mosquitto-config
+  namespace: afes
+data:
+  mosquitto.conf: |
+    listener 1883
+    protocol mqtt
+    persistence true
+    persistence_location /mosquitto/data/
+    log_dest file /mosquitto/log/mosquitto.log
+    allow_anonymous false
+    password_file /mosquitto/config/pwfile

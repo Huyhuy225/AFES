@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  namespace: afes
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+      - name: frontend
+        image: huyhuy225/afes_frontend:latest
+        ports:
+        - containerPort: 80
+        env:
+        # Biến này để code React (Vite) hiểu đường dẫn tương đối
+        - name: VITE_API_URL
+          value: "/api" 
+        # Biến này để Nginx (Reverse Proxy) biết đường dẫn BE thật
+        - name: BACKEND_URL
+          value: "http://backend-service:8080/api/"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-service
+  namespace: afes
+spec:
+  selector:
+    app: frontend
+  ports:
+  - port: 80
+    targetPort: 80
+  type: LoadBalancer

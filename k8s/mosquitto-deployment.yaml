@@ -1,0 +1,80 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mosquitto
+  namespace: afes
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mosquitto
+  template:
+    metadata:
+      labels:
+        app: mosquitto
+    spec:
+      initContainers:
+      - name: init-mosquitto
+        image: eclipse-mosquitto:latest
+        # imagePullPolicy: Never
+        command: 
+        - /bin/sh
+        - -c
+        - |
+          # Copy cấu hình và tạo mật khẩu
+          cp /mosquitto/config_template/mosquitto.conf /mosquitto/config/mosquitto.conf
+          mosquitto_passwd -c -b /mosquitto/config/pwfile Flame_Detection_System 123
+          # Cấp quyền sở hữu cho user mosquitto (UID 1883)
+          chown -R 1883:1883 /mosquitto/config /mosquitto/data /mosquitto/log
+        volumeMounts:
+        - name: config-template
+          mountPath: /mosquitto/config_template
+        - name: mosquitto-config
+          mountPath: /mosquitto/config/
+        - name: mosquitto-data
+          mountPath: /mosquitto/data/
+        - name: mosquitto-log
+          mountPath: /mosquitto/log/
+      containers:
+      - name: mosquitto
+        image: eclipse-mosquitto:latest
+        # imagePullPolicy: Never
+        ports:
+        - containerPort: 1883
+          name: mqtt
+        - containerPort: 9001
+          name: websocket
+        volumeMounts:
+        - name: mosquitto-config
+          mountPath: /mosquitto/config/
+        - name: mosquitto-data
+          mountPath: /mosquitto/data/
+        - name: mosquitto-log
+          mountPath: /mosquitto/log/
+      volumes:
+      - name: config-template
+        configMap:
+          name: mosquitto-config
+      - name: mosquitto-config
+        emptyDir: {}
+      - name: mosquitto-data
+        emptyDir: {}
+      - name: mosquitto-log
+        emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mosquitto-service
+  namespace: afes
+spec:
+  selector:
+    app: mosquitto
+  ports:
+  - name: mqtt
+    port: 1883
+    targetPort: 1883
+  - name: websocket
+    port: 9001
+    targetPort: 9001
+  type: LoadBalancer
