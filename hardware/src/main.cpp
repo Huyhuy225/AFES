@@ -5,9 +5,7 @@
 #include "config.h"
 #include "smoke_setup.h"
 #include "flame_setup.h"
-#include "output.h"
-#include "DHT+LCD.h"
-#include "pump.h"
+#include "temp_setup.h"
 
 void setup() {
     Serial.begin(115200);
@@ -16,9 +14,11 @@ void setup() {
 
     xWifiMutex = xSemaphoreCreateMutex();
     xMqttMutex = xSemaphoreCreateMutex();
-    xSensorMutex = xSemaphoreCreateMutex();
+    xFlameMutex = xSemaphoreCreateMutex();
+    xSmokeMutex = xSemaphoreCreateMutex();
+    xTempMutex = xSemaphoreCreateMutex();
 
-    if (xWifiMutex != NULL && xMqttMutex != NULL && xSensorMutex != NULL) {
+    if (xWifiMutex != NULL && xMqttMutex != NULL && xFlameMutex != NULL && xSmokeMutex != NULL && xTempMutex != NULL) {
         xTaskCreate(vTaskWifi, "WiFi_Task", 4096, NULL, 3, NULL);
         
         xTaskCreate(vTaskMqtt, "MQTT_Task", 4096, NULL, 3, NULL);
@@ -27,16 +27,8 @@ void setup() {
 
         xTaskCreate(vTaskFlame, "Flame_Task", 4096, NULL, 1, NULL);
 
-        xTaskCreate(temp_monitor, "DHT20",   4096, NULL, 2, NULL);
-
-        xTaskCreate(pump_control, "Pump_Task", 4096, NULL, 2, NULL);
-
-        xTaskCreate(led_task, "LED_Task", 2048, NULL, 1, NULL);
-
-        xTaskCreate(buzz_task, "Buzz_Task", 2048, NULL, 1, NULL);
-
-        xTaskCreate(button_task, "Button_Task", 2048, NULL, 2, NULL);
-
+        xTaskCreate(vTaskTemp, "Flame_Task", 4096, NULL, 1, NULL);
+        
         Serial.println("System is working!");
     } else {
         Serial.println("Failed to create mutex!");

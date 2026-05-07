@@ -1,86 +1,106 @@
-#include <MQGasKit.h>
 #include "smoke_setup.h"
-#include "global.h"
-#include "config.h"
 
-static float averagePpm(MQGasKit& sensor, const char* gasType) {
-    const int samples = 5;
-    float sum = 0.0f;
+#define Board "ESP32"
+#define Type "MQ-2"
+#define Voltage_Res 3.3
+#define ADC_Bit_Res 12
+#define RatioMQ2CleanAir 9.83
+
+float averagePPM(MQUnifiedsensor& MQ2) {
+    float rawValue = 0;
     int validCount = 0;
-    for (int i = 0; i < samples; ++i) {
-        float value = sensor.getPPM(gasType);
-        if (!isnan(value) && isfinite(value) && value >= 0.0f && value <= MQ2_PPM_SANITY_MAX) {
-            sum += value;
+    for (int i = 0; i < 10; i++) {
+        MQ2.update();
+        float value = MQ2.readSensor(false, 0);
+        if (isfinite(value) && value >= 0 && value <= MQ2_PPM_SANITY_MAX) {
+            rawValue += value;
             validCount++;
         }
-        vTaskDelay(pdMS_TO_TICKS(MQ2_SAMPLE_DELAY_MS));
+        vTaskDelay(100);
     }
-    return (validCount > 0) ? (sum / validCount) : NAN;
+
+    float avgValue = (validCount == 10) ? (rawValue / 10) : -1;
+    validCount = 0;
+
+    return avgValue;    
 }
 
 void vTaskSmoke(void *pvParameter) {
-    MQGasKit mq2_1(MQ2_ANALOG_PIN_A, MQ2);
-    MQGasKit mq2_2(MQ2_ANALOG_PIN_B, MQ2);
 
-    pinMode(MQ2_ANALOG_PIN_A, INPUT);
-    pinMode(MQ2_ANALOG_PIN_B, INPUT);
+    MQUnifiedsensor MQ2_1(Board, Voltage_Res, ADC_Bit_Res, SMOKE1_PIN, Type);
+    MQUnifiedsensor MQ2_2(Board, Voltage_Res, ADC_Bit_Res, SMOKE2_PIN, Type);
 
-    mq2_1.calibrate();
-    mq2_2.calibrate();
+    MQ2_1.setRegressionMethod(1); //PPM
+    MQ2_2.setRegressionMethod(1); //PPM
+
+    MQ2_1.setA(36974); MQ2_1.setB(-3.109);
+    MQ2_2.setA(36974); MQ2_2.setB(-3.109);
+
+    MQ2_1.init();
+    MQ2_2.init();
+
     const uint32_t warmupStart = millis();
+    bool isCalibrated = false;
 
     while (1) {
-        if (xSensorMutex != NULL && xSemaphoreTake(xSensorMutex, portMAX_DELAY) == pdPASS) {
-            if (millis() - warmupStart < MQ2_WARMUP_MS) {
-                smoke[0][0] = smoke[0][1] = smoke[0][2] = 0.0f;
-                smoke[1][0] = smoke[1][1] = smoke[1][2] = 0.0f;
+
+        if (millis() - warmupStart < MQ2_WARMUP_MS) {
+            if (xSemaphoreTake(xSmokeMutex, portMAX_DELAY) == pdPASS) {
                 smoke_alert = false;
-                Serial.printf("\nMQ2 warmup... ignoring first %.1fs data", MQ2_WARMUP_MS / 1000.0f);
-                xSemaphoreGive(xSensorMutex);
-                vTaskDelay(pdMS_TO_TICKS(MQ2_TASK_INTERVAL_MS));
-                continue;
+                xSemaphoreGive(xSmokeMutex);
             }
-
-            const int raw1 = analogRead(MQ2_ANALOG_PIN_A);
-            const int raw2 = analogRead(MQ2_ANALOG_PIN_B);
-            float smoke1 = averagePpm(mq2_1, "Smoke");
-            float smoke2 = averagePpm(mq2_2, "Smoke");
-
-            if (isnan(smoke1) || isnan(smoke2)) {
-                Serial.print("\n Value is unreadable!");
-                smoke_alert = false;
-            } else {
-                if (raw1 <= MQ2_ADC_RAIL_LOW || raw1 >= MQ2_ADC_RAIL_HIGH ||
-                    raw2 <= MQ2_ADC_RAIL_LOW || raw2 >= MQ2_ADC_RAIL_HIGH) {
-                    smoke[0][0] = smoke[0][1] = smoke[0][2] = 0.0f;
-                    smoke[1][0] = smoke[1][1] = smoke[1][2] = 0.0f;
-                    smoke_alert = false;
-                    Serial.printf("\nMQ2 ADC at rail (raw1=%d raw2=%d), readings cleared", raw1, raw2);
-                    xSemaphoreGive(xSensorMutex);
-                    vTaskDelay(pdMS_TO_TICKS(MQ2_TASK_INTERVAL_MS));
-                    continue;
-                }
-
-                smoke[0][0] = averagePpm(mq2_1, "CO");
-                smoke[0][1] = averagePpm(mq2_1, "LPG");
-                smoke[0][2] = smoke1;
-
-                smoke[1][0] = averagePpm(mq2_2, "CO");
-                smoke[1][1] = averagePpm(mq2_2, "LPG");
-                smoke[1][2] = smoke2;
-
-                const float mq2_1_total = smoke[0][0] + smoke[0][1] + smoke[0][2];
-                const float mq2_2_total = smoke[1][0] + smoke[1][1] + smoke[1][2];
-                const float smoke_total = mq2_1_total + mq2_2_total;
-
-                Serial.printf("\nCO1: %.2f | LPG1: %.2f | Smoke1: %.2f ppm", smoke[0][0], smoke[0][1], smoke[0][2]);
-                Serial.printf("\nCO2 %.2f | LPG2: %.2f | Smoke2: %.2f ppm", smoke[1][0], smoke[1][1], smoke[1][2]);
-
-                smoke_alert = smoke_total > MQ2_SMOKE_ALERT_THRESHOLD_PPM;
-            }
-            xSemaphoreGive(xSensorMutex);
+            vTaskDelay(pdMS_TO_TICKS(1000));
+            continue;
         }
 
-        vTaskDelay(pdMS_TO_TICKS(MQ2_TASK_INTERVAL_MS));
+        // calculate Calibrate
+        if (!isCalibrated) {
+            Serial.print("\nMQ2 Calibrating");
+
+            float calcR0_1 = 0, calcR0_2 = 0;
+
+            for (int i = 0; i < 10; i++) {
+                MQ2_1.update();
+                MQ2_2.update();
+                calcR0_1 += MQ2_1.calibrate(RatioMQ2CleanAir);
+                calcR0_2 += MQ2_2.calibrate(RatioMQ2CleanAir);
+                vTaskDelay(pdMS_TO_TICKS(100));
+            }
+
+            MQ2_1.setR0(calcR0_1 / 10.0);
+            MQ2_2.setR0(calcR0_2 / 10.0);
+
+
+            if (isinf(calcR0_1) || isinf(calcR0_2)) {
+                Serial.println("Warning: MQ2 Open Circuit!");
+            } else {
+                isCalibrated = true;
+                Serial.println("MQ2 Calibration Done!");
+            }
+        
+        }
+        if (xSmokeMutex != NULL && xSemaphoreTake(xSmokeMutex, portMAX_DELAY) == pdPASS) {
+            MQ2_1.update();
+            MQ2_2.update();
+
+            float rawInput1 = averagePPM(MQ2_1);
+            float rawInput2 = averagePPM(MQ2_2);
+
+            if (rawInput1 == - 1 || rawInput2 == -1) {
+                Serial.print("\n Value is unreadable!");
+            } else {
+                smoke = (rawInput1 + rawInput2) / 2;
+                if (rawInput1 > MQ2_SMOKE_THRESHOLD || rawInput2 > MQ2_SMOKE_THRESHOLD) {
+                    smoke_alert = true;
+                } else {
+                    smoke_alert = false;
+                }
+
+                Serial.printf("\nSmoke Signal: %.2f ", smoke);
+            }
+            xSemaphoreGive(xSmokeMutex);
+        }
+        
+        vTaskDelay(pdMS_TO_TICKS(500)); 
     }
 }

@@ -1,29 +1,37 @@
 #include "flame_setup.h"
-#include "global.h"
 
 void vTaskFlame(void *pvParameter) {
-    pinMode(FLAME1_DIGIPIN, INPUT);
-    pinMode(FLAME2_DIGIPIN, INPUT);
+    pinMode(FLAME1_PIN, INPUT);
+    pinMode(FLAME2_PIN, INPUT);
+
+    const uint32_t warmupStart = millis();
 
     while (1) {
-        if (xSensorMutex != NULL && xSemaphoreTake(xSensorMutex, portMAX_DELAY) == pdPASS) {
-            float digi1 = digitalRead(FLAME1_DIGIPIN);
-            float digi2 = digitalRead(FLAME2_DIGIPIN);
-            float rawValue1 = analogRead(FLAME1_ANAPIN);
-            float rawValue2 = analogRead(FLAME2_ANAPIN);
+        if (millis() - warmupStart < FLAME_WARMUP_MS) {
+            if (xSemaphoreTake(xFlameMutex, portMAX_DELAY) == pdPASS) {
+                xSemaphoreGive(xFlameMutex);
+            }
+            vTaskDelay(pdMS_TO_TICKS(1000));
+            continue;
+        }
 
-            if (isnan(rawValue1) || isnan(rawValue2)) {
+
+        if (xFlameMutex != NULL && xSemaphoreTake(xFlameMutex, portMAX_DELAY) == pdPASS) {
+            int rawInput1 = digitalRead(FLAME1_PIN);
+            int rawInput2 = digitalRead(FLAME2_PIN);
+            if (isnan(rawInput1) || isnan(rawInput2)) {
                 Serial.print("\nValue is unreadable!"); 
             } else {
-                fire_alert = (digi1 == HIGH) || (digi2 == HIGH);
-                flame[0] = (1.0 - rawValue1/4095.0) * 100;
-                flame[1] = (1.0 - rawValue2/4095.0) * 100;
+                if (rawInput1 == LOW || rawInput2 == LOW) {
+                    flame = 1;
+                } else {
+                    flame = 0;
+                }
 
-                Serial.printf("\nRaw Value: %.2f | Flame Detect: %.2f", rawValue1, flame[0]); 
-                Serial.printf("\nRaw Value: %.2f | Flame Detect: %.2f", rawValue2, flame[1]); 
+                Serial.printf("\nFlame Detect: %d", flame); 
             }
-            xSemaphoreGive(xSensorMutex);
+            xSemaphoreGive(xFlameMutex);
         }
-        vTaskDelay(pdMS_TO_TICKS(3000));
+        vTaskDelay(pdMS_TO_TICKS(500));
     }
 }   
