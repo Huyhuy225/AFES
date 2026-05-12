@@ -1,62 +1,65 @@
-#include <WiFi.h>
-#include <PubSubClient.h>
-#include <ArduinoJson.h>
 #include "mqtt_setup.h"
-#include "global.h"
-#include "config.h"
 
 WiFiClient yoloClient;
 PubSubClient client(yoloClient);
+AESLib aesLib;
 long lastPublishTime = 0;
-const long publishInterval = 2000;
+const long publishInterval = 3000;
 const uint32_t testDurationMs = 10000UL;
-const uint32_t emergencyDurationMs = 20000UL;
+const uint32_t emergencyDurationsMs = 20000UL;
+const char* DEVICE_ID = "101";
+
+byte aes_key[] = { 0x2B, 0x7E, 0x15, 0x16, 0x28, 0xAE, 0xD2, 0xA6,
+                   0xAB, 0xF7, 0x15, 0x88, 0x09, 0xCF, 0x4F, 0x3C };
+byte AES_IV[N_BLOCK] = { 0x28, 0x34, 0xA5, 0xAF, 0xBE, 0xB8, 0x14, 0xF5,
+                         0x08, 0xE1, 0x24, 0xD2, 0xB3, 0xAB, 0xDB, 0xCE };
 
 static void applyControlAction(const String& action) {
     const uint32_t nowMs = millis();
     if (action == "pump_on") {
         manual_pump_on = true;
-        manual_pump_until_ms = nowMs + testDurationMs;
+        manual_pump_ms = nowMs + testDurationMs;
         Serial.println("\n[CTRL] pump_on accepted");
     } else if (action == "pump_off") {
         manual_pump_on = false;
-        manual_pump_until_ms = 0;
+        manual_pump_ms = 0;
         Serial.println("\n[CTRL] pump_off accepted");
     } else if (action == "test_alarm") {
         manual_alarm_on = true;
-        manual_alarm_until_ms = nowMs + testDurationMs;
+        manual_alarm_ms = nowMs + testDurationMs;
         Serial.println("\n[CTRL] test_alarm accepted");
     } else if (action == "reset_system") {
         manual_pump_on = false;
         manual_alarm_on = false;
         manual_emergency_on = false;
-        manual_pump_until_ms = 0;
-        manual_alarm_until_ms = 0;
-        manual_emergency_until_ms = 0;
+        manual_pump_ms = 0;
+        manual_alarm_ms = 0;
+        manual_emergency_ms = 0;
         fire_alert = false;
         smoke_alert = false;
+        temp_alert = false;
         Serial.println("\n[CTRL] reset_system accepted");
     } else if (action == "full_test") {
         manual_pump_on = true;
         manual_alarm_on = true;
-        manual_pump_until_ms = nowMs + testDurationMs;
-        manual_alarm_until_ms = nowMs + testDurationMs;
+        manual_pump_ms = nowMs + testDurationMs;
+        manual_alarm_ms = nowMs + testDurationMs;
         Serial.println("\n[CTRL] full_test accepted");
     } else if (action == "emergency_alert") {
         manual_emergency_on = true;
         manual_pump_on = true;
         manual_alarm_on = true;
-        manual_emergency_until_ms = nowMs + emergencyDurationMs;
-        manual_pump_until_ms = nowMs + emergencyDurationMs;
-        manual_alarm_until_ms = nowMs + emergencyDurationMs;
+        manual_emergency_ms = nowMs + emergencyDurationsMs;
+        manual_pump_ms = nowMs + emergencyDurationsMs;
+        manual_alarm_ms = nowMs + emergencyDurationsMs;
         Serial.println("\n[CTRL] emergency_alert accepted");
     } else if (action == "emergency_off" || action == "auto_mode" || action == "all_outputs_off") {
         manual_emergency_on = false;
         manual_pump_on = false;
         manual_alarm_on = false;
-        manual_emergency_until_ms = 0;
-        manual_pump_until_ms = 0;
-        manual_alarm_until_ms = 0;
+        manual_emergency_ms = 0;
+        manual_pump_ms = 0;
+        manual_alarm_ms = 0;
         Serial.println(action == "all_outputs_off"
                            ? "\n[CTRL] all_outputs_off: LED/buzzer/pump off, AUTO"
                            : "\n[CTRL] emergency_off accepted, back to AUTO");
@@ -66,113 +69,101 @@ static void applyControlAction(const String& action) {
     }
 }
 
-static void mqttCallback(char* topic, byte* payload, unsigned int length) {
-    if (String(topic) != TOPIC_CONTROL) {
+void callback(char* topic, byte* payload, unsigned int length) {
+    if (strcmp(topic, TOPIC_CONTROL) != 0) {
         return;
     }
 
     JsonDocument doc;
     DeserializationError err = deserializeJson(doc, payload, length);
+
     if (err) {
         Serial.print("\n[CTRL] invalid JSON: ");
         Serial.println(err.c_str());
         return;
     }
+    const char* roomId = doc["roomId"];
+    if (roomId != NULL) {
+        int targetRoomId = doc["roomId"].as<int>();
+        int currentRoomId = atoi(DEVICE_ID);
+        
+        if (targetRoomId != currentRoomId) {
+            Serial.printf("\n[CTRL] Ignored: targetRoomId %d does not match local %d\n", targetRoomId, currentRoomId);
+            return;
+        }
+    }
 
     const char* action = doc["action"];
-    if (action == nullptr) {
-        Serial.println("\n[CTRL] missing action field");
-        return;
+    if (action != NULL) {
+        applyControlAction(String(action));
+    } else {
+        Serial.println("\n[CTRL] Missing 'action' field in JSON");
     }
-    applyControlAction(String(action));
 }
 
-String packageData(const char* topic) {
+String encryptData(String plainText) {
+    byte temp_iv[N_BLOCK];
+    memcpy(temp_iv, AES_IV, sizeof(AES_IV));
+
+    uint16_t msgLen = plainText.length();
+
+    char cipher64[64];
+
+    aesLib.encrypt64((byte *)plainText.c_str(), msgLen, cipher64, aes_key, sizeof(aes_key), temp_iv);
+
+    return String(cipher64);
+}
+
+void packageData() {
     JsonDocument doc;
-    char buffer[256];
+    char buffer[512];
 
-    if (String(topic) == TOPIC_SMOKE) {
-        JsonObject mq2_1_obj = doc["mq2_1"].to<JsonObject>();
-        mq2_1_obj["CO"] = smoke[0][0];
-        mq2_1_obj["LPG"] = smoke[0][1];
-        mq2_1_obj["SMOKE"] = smoke[0][2];
+    doc["smoke_enc_value"] = encryptData(String(smoke));
+    doc["flame_enc_value"] = encryptData(String(flame));
+    doc["temp_enc_value"] = encryptData(String(temp));
 
-        JsonObject mq2_2_obj = doc["mq2_2"].to<JsonObject>();
-        mq2_2_obj["CO"] = smoke[1][0];
-        mq2_2_obj["LPG"] = smoke[1][1];
-        mq2_2_obj["SMOKE"] = smoke[1][2];
-    } else if (String(topic) == TOPIC_FLAME) {
-        JsonObject flame_obj = doc["flame_data"].to<JsonObject>();
-        flame_obj["FLAME1"] = flame[0];
-        flame_obj["FLAME2"] = flame[1];
-    } else if (String(topic) == TOPIC_DHT20) {
-        JsonObject dht_obj = doc["dht20_data"].to<JsonObject>();
-        dht_obj["TEMP"] = glob_temperature;
-    }
     serializeJson(doc, buffer);
-    client.publish(topic, buffer);
+    client.publish(TOPIC_VALUE, buffer);
 
-    Serial.printf("\nPublished to %s: %s", topic, buffer);
-
-    return String(buffer);
+    Serial.printf("\n Published with hash: %s", buffer);
 }
 
 void vTaskMqtt(void* pvParameters) {
-    bool log = false;
-    client.setServer(mqtt_server, mqtt_port);
-    client.setCallback(mqttCallback);
+    client.setCallback(callback);
+
     while (1) {
-        client.loop();
-        log = client.connected();
-
-        if (log) {
-            if (xMqttMutex != NULL && xSemaphoreTake(xMqttMutex, portMAX_DELAY) == pdPASS) {
-                Serial.print("\nMQTT still connected!");
-
-                if (millis() - lastPublishTime >= publishInterval) {
-                    lastPublishTime = millis();
-
-                    packageData(TOPIC_SMOKE);
-
-                    packageData(TOPIC_FLAME);
-
-                    packageData(TOPIC_DHT20);
-
-                    Serial.print("\n Data is sent!");
-                }
-
-                xSemaphoreGive(xMqttMutex);
-            }
-        } else {
-            if (WiFi.status() == WL_CONNECTED) {
-                if (!client.connected()) {
+        if (WiFi.status() == WL_CONNECTED) {
+            if (!client.connected()) {
+                if (String(mqtt_server) != "NO_IP") {
                     if (xMqttMutex != NULL && xSemaphoreTake(xMqttMutex, portMAX_DELAY) == pdPASS) {
-                        Serial.print("\nMQTT: Connecting...");
-                        String clientID = "Sensor-" + String(random(0xffff), HEX);
-                        if (client.connect(clientID.c_str(), mqtt_user, mqtt_password)){
-                            Serial.print("\nMQTT Server ");
-                            Serial.print(mqtt_server);
-                            Serial.print(":");
-                            Serial.println(mqtt_port);
-                            client.subscribe(TOPIC_CONTROL);
-                            Serial.print("[CTRL] subscribed ");
-                            Serial.println(TOPIC_CONTROL);
-                            log = true;
+                        Serial.printf("\nMQTT: Connecting to %s...", mqtt_server);
+                        client.setServer(mqtt_server, 1883);
+                        if (client.connect(DEVICE_ID, "Flame_Detection_System", "123")){
+                            Serial.print("\nSUCCESS");
+                            client.subscribe(TOPIC_CONTROL); // Đăng ký nhận lệnh
                         } else {
-                            Serial.print("\nMQTT: Error = "); Serial.println(client.state());
-                            log = false;
+                            Serial.print("\nFAILED, rc= "); Serial.println(client.state());
                         }
                         xSemaphoreGive(xMqttMutex);
-                    } else {
-                        Serial.print("\nWaiting mutex ...");
-                        log = false;
                     }
-                } 
+                } else {
+                    Serial.print("\nWarning: Broker IP not configured yet!");
+                }  
             } else {
-                Serial.print("\nWaiting WIFI ...");
-                log = false;
+                if (xMqttMutex != NULL && xSemaphoreTake(xMqttMutex, portMAX_DELAY) == pdPASS) {
+                    client.loop();
+
+                    if (millis() - lastPublishTime >= publishInterval) {
+                        lastPublishTime = millis();
+
+                        packageData();
+                    }
+
+                    xSemaphoreGive(xMqttMutex);
+                }
             }
         }
-        vTaskDelay(pdMS_TO_TICKS(500)); // MQTT beat
+
+        vTaskDelay(pdMS_TO_TICKS(50)); // MQTT beat
     }
 }
