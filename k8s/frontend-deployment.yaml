@@ -15,7 +15,8 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: huyhuy225/afes_frontend:latest
+        image: huyhuy225/afes-frontend:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 80
         env:

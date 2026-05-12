@@ -105,6 +105,83 @@ Every push to the main branch automatically:
 
 ---
 
+## ☸️ Kubernetes Deployment (Minikube)
+
+For production-grade orchestration, the system can be deployed to a Kubernetes cluster.
+
+### 🚀 Deployment Order
+Execute these commands in the following sequence to ensure all dependencies are resolved:
+
+```bash
+# 1. Prepare Environment
+kubectl apply -f k8s/namespace.yaml
+
+# 2. Configuration & Infrastructure
+kubectl apply -f k8s/configmap.yaml
+kubectl apply -f k8s/secret.yaml
+kubectl apply -f k8s/mysql-pvc.yaml
+
+# 3. Databases & Services
+kubectl apply -f k8s/mysql-deployment.yaml
+kubectl apply -f k8s/mosquitto-deployment.yaml
+
+# 4. Applications
+kubectl apply -f k8s/backend-deployment.yaml
+kubectl apply -f k8s/frontend-deployment.yaml
+```
+
+### 🔍 Verification
+Check the status of all resources in the `afes` namespace:
+```bash
+kubectl get all -n afes
+```
+
+Access the frontend dashboard via Minikube:
+```bash
+minikube service frontend-service -n afes
+```
+
+---
+
+## ☁️ Azure Deployment (AKS)
+
+To deploy the system to Azure Kubernetes Service (AKS), follow these steps:
+
+### 🚀 Prerequisites
+- [Azure CLI](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli) installed.
+- An active Azure Subscription.
+
+### 🛠️ Step-by-Step
+
+```bash
+# 1. Login & Setup
+az login
+az account set --subscription d94f5a82-3d38-4f3e-85c5-548c90ed2d81--generate-ssh-keys
+
+# 2. Connect kubectl to AKS
+az aks get-credentials --resource-group AFES_Group --name afes_cluster --overwrite-existing
+
+# 3. Build & Push Images (Docker Hub example)
+docker build -t huyhuy225/afes-backend:latest ./backend
+docker push huyhuy225/afes-backend:latest
+docker build -t huyhuy225/afes-frontend:latest ./frontend
+docker push huyhuy225/afes-frontend:latest
+
+# 4. Deploy Manifests
+kubectl apply -f k8s/
+kubectl rollout restart deployment/frontend -n afes
+```
+
+### 🌐 Accessing the App
+Get the external IP of the frontend service:
+```bash
+kubectl get svc frontend-service -n afes
+kubectl get pods -n afes
+kubectl logs --tail=100 -n afes <pod-name>
+```
+
+---
+
 ## 👤 Author
 
 **Vo Quang Huy**
