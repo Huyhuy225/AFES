@@ -114,7 +114,7 @@ void callback(char* topic, byte* payload, unsigned int length) {
         int currentRoomId = atoi(DEVICE_ID);
         if (targetRoomId == currentRoomId) {
             if (doc["action"].isNull()) {
-                applyControlAction(doc["action"]);
+                applyControlAction(String(doc["action"]));
             } else {
                 Serial.println("\n[CTRL] Missing 'action' field in JSON");
             }
