@@ -15,18 +15,26 @@ byte AES_IV[N_BLOCK] = {0x28, 0x34, 0xA5, 0xAF, 0xBE, 0xB8, 0x14, 0xF5,
                         0x08, 0xE1, 0x24, 0xD2, 0xB3, 0xAB, 0xDB, 0xCE};
 
 static void applyControlAction(const String &action) {
+  // Acquire xOutputMutex to prevent race condition with buzzer/LED/pump tasks
+  // that read and reset these same variables under the same mutex.
+  if (xOutputMutex == NULL ||
+      xSemaphoreTake(xOutputMutex, pdMS_TO_TICKS(200)) != pdPASS) {
+    Serial.println("\n[CTRL] ERROR: failed to acquire xOutputMutex");
+    return;
+  }
+
   const uint32_t nowMs = millis();
   if (action == "pump_on") {
-    manual_pump_on = true;
     manual_pump_ms = nowMs + testDurationMs;
+    manual_pump_on = true;
     Serial.println("\n[CTRL] pump_on accepted");
   } else if (action == "pump_off") {
     manual_pump_on = false;
     manual_pump_ms = 0;
     Serial.println("\n[CTRL] pump_off accepted");
   } else if (action == "test_alarm") {
-    manual_alarm_on = true;
     manual_alarm_ms = nowMs + testDurationMs;
+    manual_alarm_on = true;
     Serial.println("\n[CTRL] test_alarm accepted");
   } else if (action == "reset_system") {
     manual_pump_on = false;
@@ -40,18 +48,18 @@ static void applyControlAction(const String &action) {
     temp_alert = false;
     Serial.println("\n[CTRL] reset_system accepted");
   } else if (action == "full_test") {
-    manual_pump_on = true;
-    manual_alarm_on = true;
     manual_pump_ms = nowMs + testDurationMs;
     manual_alarm_ms = nowMs + testDurationMs;
-    Serial.println("\n[CTRL] full_test accepted");
-  } else if (action == "emergency_alert") {
-    manual_emergency_on = true;
     manual_pump_on = true;
     manual_alarm_on = true;
+    Serial.println("\n[CTRL] full_test accepted");
+  } else if (action == "emergency_alert") {
     manual_emergency_ms = nowMs + emergencyDurationsMs;
     manual_pump_ms = nowMs + emergencyDurationsMs;
     manual_alarm_ms = nowMs + emergencyDurationsMs;
+    manual_emergency_on = true;
+    manual_pump_on = true;
+    manual_alarm_on = true;
     Serial.println("\n[CTRL] emergency_alert accepted");
   } else if (action == "emergency_off" || action == "auto_mode" ||
              action == "all_outputs_off") {
@@ -68,6 +76,8 @@ static void applyControlAction(const String &action) {
     Serial.print("\n[CTRL] unknown action: ");
     Serial.println(action);
   }
+
+  xSemaphoreGive(xOutputMutex);
 }
 
 String decryptData(String encryptText) {
