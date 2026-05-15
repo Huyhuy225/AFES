@@ -29,18 +29,18 @@ spec:
             path: /actuator/health
             port: 8080
           periodSeconds: 5
-          failureThreshold: 120
+          failureThreshold: 20
         livenessProbe:
           httpGet:
             path: /actuator/health
             port: 8080
-          initialDelaySeconds: 180
+          initialDelaySeconds: 10 
           periodSeconds: 20
         readinessProbe:
           httpGet:
             path: /actuator/health
             port: 8080
-          initialDelaySeconds: 120
+          initialDelaySeconds: 5
           periodSeconds: 10
       initContainers:
       - name: wait-for-db
