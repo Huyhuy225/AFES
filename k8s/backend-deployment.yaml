@@ -26,22 +26,33 @@ spec:
             name: afes-secret
         startupProbe:
           httpGet:
-            path: /actuator/health
+            path: /actuator/health   # Tạm dùng endpoint này cho đến khi rebuild image
             port: 8080
+          initialDelaySeconds: 30   # liveness ready sớm hơn full health
           periodSeconds: 5
-          failureThreshold: 20
+          failureThreshold: 36      # 30s + 5s*36 = max 210s
+          timeoutSeconds: 5         # Tăng timeout vì node đang CPU pressure
         livenessProbe:
           httpGet:
             path: /actuator/health
             port: 8080
-          initialDelaySeconds: 10 
-          periodSeconds: 20
+          periodSeconds: 30
+          failureThreshold: 3
+          timeoutSeconds: 5
         readinessProbe:
           httpGet:
             path: /actuator/health
             port: 8080
-          initialDelaySeconds: 5
-          periodSeconds: 10
+          periodSeconds: 5
+          failureThreshold: 3
+          timeoutSeconds: 5
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"             # Request thấp để schedule được, limit cao để JVM burst
+          limits:
+            memory: "1Gi"
+            cpu: "1000m"
       initContainers:
       - name: wait-for-db
         image: busybox:1.35
